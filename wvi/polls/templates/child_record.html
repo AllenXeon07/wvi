@@ -1,0 +1,51 @@
+<form action="/childrecord/insert_excel" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label for="file">File</label>
+    <input type="file" name="file_excel" id="file_excel">
+    <button type="submit">Submit</button>
+</form>
+
+{% if error %}
+    <p>{{error}}</p>
+{% endif %}
+
+{% if child_records %}
+<table>
+    <tr>
+        <th>Child ID</th>
+        <th>Child Name</th>
+        <th>Gender</th>
+        <th>Project Number and Name</th>
+        <th>Community</th>
+        <th>RC Status</th>
+        <th>Age</th>
+        <th>Kader</th>
+    </tr>
+    {% for child in child_records %}
+       <tr>
+        <td>{{child.child_id.id}}</td>
+        <td>{{child.child_id.name}}</td>
+        <td>{{child.child_id.gender}}</td>
+        <td>{{child.project_number}}</td>
+        <td>{{child.child_id.community}}</td>
+        <td>{{child.status}}</td>
+        <td>{{child.child_id.age}}</td>
+        <td>
+            <form action="/childrecord/update" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="childrecord_id" value="{{child.id}}">
+                <select name="kader_id" id="kader" >
+                    {% for kader in kaders %}
+                        <option value="{{kader.id}}" {% if kader.id == child.kader_id.id %} selected {% endif %}>{{kader.name}} - {{kader.phone_number}}</option>
+                    {% endfor %}
+                    <option value="NULL" {% if child.kader_id is None %} selected {% endif %}></option>
+                </select>
+                <button type="submit">Update</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+    <p>Data not exist !</p>
+{% endif %}

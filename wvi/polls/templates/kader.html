@@ -1,0 +1,37 @@
+<h2>Form</h2>
+<form action="/kader/insert" method="post">
+    {% csrf_token %}
+    <label for="name">Name</label>
+    <input type="text" name="name" id="name">
+    <label for="number">Number</label>
+    <input type="text" name="number" id="number">
+
+    <button type="submit">Submit</button>
+</form>
+
+{% if kaders %}
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Phone Number</th>
+        </tr>
+        {% for kader in kaders %}
+            <tr>
+                <form action="kader/update" method="post">
+                    {% csrf_token %}
+                <input type="hidden" name="kader_id" id="kader_id" value="{{kader.id}}" >
+                <td><input type="text" name="name"value="{{kader.name}}"></td>
+                <td><input type="text" name="number"value="{{kader.phone_number}}"></td>
+                <td><button type="submit">Update</button></td>
+                </form>
+                <form action="kader/delete" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="kader_id" id="kader_id" value="{{kader.id}}" >
+                    <td><button type="submit">Delete</button></td>
+                </form>
+            </tr>
+        {% endfor %}
+    </table>
+{% else %}
+    <p>Data not exist</p>
+{% endif %}
