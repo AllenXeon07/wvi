@@ -24,8 +24,9 @@ urlpatterns = [
     path("correspondence/update_kader", views.CorrespondenceView.update_kader),
     path("correspondence/update_due_date", views.CorrespondenceView.update_due_date),
 
-    path("Participant", views.ParticipantView.view, name="participant"),
-    
+    path("participant", views.ParticipantView.view, name="participant"),
+    path("participant/insert_excel", views.ParticipantView.insert_excel, name="participant"),
+
 
     path("template", views.template, name="kader"),
     
