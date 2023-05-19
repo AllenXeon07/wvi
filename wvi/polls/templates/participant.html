@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/css/bootstrap.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css" />
+ 
+    <title>Document</title>
+</head>
+<body>
+
+    <form action="/childrecord/insert_excel" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="file">File</label>
+        <input type="file" name="file_excel" id="file_excel">
+        <button type="submit">Submit</button>
+    </form>
+    {% if error %}
+        <p>{{error}}</p>
+    {% endif %}
+    
+    {% if child_records %}
+    <table class="table table-striped table-bordered" id="tables">
+        <thead>
+        <tr>
+            <th>Child ID</th>
+            <th>Child Name</th>
+            <th>Gender</th>
+            <th>Project Number and Name</th>
+            <th>Community</th>
+            <th>RC Status</th>
+            <th>Age</th>
+            <th>Kader</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for child in child_records %}
+           <tr>
+            <td>{{child.child_id.id}}</td>
+            <td>{{child.child_id.name}}</td>
+            <td>{{child.child_id.gender}}</td>
+            <td>{{child.project_number}}</td>
+            <td>{{child.child_id.community}}</td>
+            {% if child.status == "3 - Hold" %}
+                <td style="background-color:yellow">{{child.status}}</td>
+            {% else %}
+                <td>{{child.status}}</td>
+            {% endif %}
+            <td>{{child.child_id.age}}</td>
+            <td>
+                <form action="/childrecord/update" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="childrecord_id" value="{{child.id}}">
+                    <select name="kader_id" id="kader" >
+                        {% for kader in kaders %}
+                            <option value="{{kader.id}}" {% if kader.id == child.kader_id.id %} selected {% endif %}>{{kader.name}} - {{kader.phone_number}}</option>
+                        {% endfor %}
+                        <option value="NULL" {% if child.kader_id is None %} selected {% endif %}></option>
+                    </select>
+                    <button type="submit">Update</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    </table>
+    {% else %}
+        <p>Data not exist !</p>
+    {% endif %}
+
+    {% block js %}
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
+    <script src="//cdn.datatables.net/1.13.4/js/dataTables.bootstrap4.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#tables').DataTable();
+        });
+    </script>
+
+    {% endblock js %}
+
+</body>
+</html>
+
