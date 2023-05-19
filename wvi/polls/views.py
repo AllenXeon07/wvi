@@ -295,7 +295,7 @@ class ParticipantView():
     
     def insert_excel(request):
         if request.method == "POST":
-            template_name = "child_record.html"
+            template_name = "participant.html"
             context = {
                 "error" : "",
                 "participants" : Participation.objects.all()
@@ -335,7 +335,7 @@ class ParticipantView():
                         child_support = datas.loc[i, 'ChildSupport']
                         family_support = datas.loc[i, 'FamilySupport']
                         benefit_support = datas.loc[i, 'BenefitSupport']
-
+                        total = child_participation + family_participation + child_support + family_support + benefit_support
 
                         if(Child.objects.filter(pk=id).exists()):
                             child = Child.objects.get(pk=id)
@@ -347,7 +347,7 @@ class ParticipantView():
                         else:
                             child = Child(id=id, name=name, gender=gender, community=community, age=age)
                             child.save()
-                        participation = Participation(child_id = child, child_participation = child_participation, family_participation = family_participation, child_support = child_support, family_support = family_support, benefit_support = benefit_support)
+                        participation = Participation(child_id = child, child_participation = child_participation, family_participation = family_participation, child_support = child_support, family_support = family_support, benefit_support = benefit_support, total=total)
                         participation.save()
 
             if(context['error'] == ''):

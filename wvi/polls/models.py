@@ -27,6 +27,7 @@ class Participation(models.Model):
     child_support = models.IntegerField(null=True)
     family_support = models.IntegerField(null=True)
     benefit_support = models.IntegerField(null=True)
+    total = models.IntegerField(null=True)
 
 class Correspondence(models.Model):
     child_id = models.ForeignKey(Child, on_delete=models.CASCADE)
