@@ -199,8 +199,9 @@ class KaderView():
         if request.method == "POST":
             name = request.POST['name']
             number = request.POST['number']
+            kelurahan = request.POST['kelurahan']
 
-            kader=  Kader(name=name, phone_number=number)
+            kader=  Kader(name=name, phone_number=number, kelurahan=kelurahan)
             kader.save()
             return HttpResponseRedirect(reverse("kader"))
         else:
@@ -211,10 +212,12 @@ class KaderView():
             id = request.POST['kader_id']
             name = request.POST['name']
             number = request.POST['number']
+            kelurahan = request.POST['kelurahan']
 
             kader = Kader.objects.get(pk=id)
             kader.name = name
             kader.phone_number = number
+            kader.kelurahan = kelurahan
             kader.save()
             return HttpResponseRedirect(reverse("kader"))
         else:

@@ -13,6 +13,7 @@ class Child(models.Model):
 class Kader(models.Model):
     name = models.TextField(null=True)
     phone_number = models.CharField(max_length=15, null=True)
+    kelurahan = models.TextField(null=True)
 
 class ChildRecord(models.Model):
     child_id = models.ForeignKey(Child, on_delete=models.CASCADE)

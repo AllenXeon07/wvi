@@ -7,7 +7,10 @@
     <input type="text" name="name" id="name" class="form-control">
     <label for="number">Number</label>
     <input type="text" class="form-control" name="number" id="number">
-<br>
+    <label for="name">Kelurahan</label>
+    <input type="text" name="kelurahan" id="kelurahan" class="form-control">
+    
+    <br>
     <button type="submit" class="btn btn-success">Submit</button>
 </form>
 <hr>
@@ -25,6 +28,7 @@
                 <input type="hidden" name="kader_id" id="kader_id" value="{{kader.id}}" >
                 <td><input type="text" class="form-control" name="name"value="{{kader.name}}"></td>
                 <td><input type="text" class="form-control" name="number"value="{{kader.phone_number}}"></td>
+                <td><input type="text" class="form-control" name="kelurahan"value="{{kader.kelurahan}}"></td>
                 <td><button type="submit" class="btn btn-secondary">Update</button></td>
                 </form>
                 <form action="kader/delete" method="post">

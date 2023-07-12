@@ -13,7 +13,7 @@
     {% extends "template.html" %} 
     <div class="container">
     
-<!-- {% block content %} -->
+ {% block content %} 
     {% if error %}
         <p>{{error}}</p>
     {% endif %}
@@ -49,6 +49,16 @@
         </tr>
         {% endfor %}
     </tbody>
+    <tfoot>
+        <tr>
+            <th>Child ID</th>
+            <th>Child Name</th>
+            <th>Gender</th>
+            <th>Community</th>
+            <th>Age</th>
+            <th>RT</th>
+        </tr>
+    </tfoot>
     </table>
     {% else %}
         <p>Data not exist !</p>
@@ -62,12 +72,36 @@
     <script src="//cdn.datatables.net/1.13.4/js/dataTables.bootstrap4.min.js"></script>
     <script>
         $(document).ready(function() {
-            $('#tables').DataTable();
-        });
+                new DataTable('#tables', {
+                    scrollX: true,
+                    initComplete: function () {
+        this.api()
+            .columns()
+            .every(function () {
+                let column = this;
+                console.log(column.header() );
+                let title = column.footer().textContent;
+                
+                // Create input element
+                let input = document.createElement('input');
+                input.placeholder = title;
+                column.footer().replaceChildren(input);
+ 
+                // Event listener for user input
+                input.addEventListener('keyup', () => {
+                    if (column.search() !== this.value) {
+                        column.search(input.value).draw();
+                    }
+                });
+            });
+            }
+                });
+    
+            });
     </script>
 
     {% endblock js %}
-<!-- {% endblock %} -->
+{% endblock %}
 </body>
 </html>
 

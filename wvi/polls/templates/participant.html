@@ -9,9 +9,11 @@
  
     <title>Document</title>
 </head>
-<!-- {% extends "template.html" %}
- {% block content %} -->
+
 <body>
+    {% extends "template.html" %}
+
+    {% block content %}
     <div class="container">
     <form action="/participant/insert_excel" method="post" enctype="multipart/form-data">
         {% csrf_token %}
@@ -92,6 +94,7 @@
     <script>
         $(document).ready(function() {
                 new DataTable('#tables', {
+                    scrollX: true,
                     initComplete: function () {
         this.api()
             .columns()
@@ -118,11 +121,11 @@
             });
     </script>
 
-    <!-- {% endblock js %} -->
-
+    {% endblock js %}
+    {% endblock %}
    
 
 </body>
-<!-- {% endblock %} -->
+
 </html>
 
