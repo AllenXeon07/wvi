@@ -5,6 +5,9 @@ urlpatterns = [
     path("", views.index, name='index'),
     path("insert", views.insert, name='insert'),
     path("insert_excel", views.insert_excel, name="insert_excel"),
+    path('login/', views.CustomAuthentication.loginView, name='login'),
+    path('logout/', views.CustomAuthentication.logoutView, name='logout'),
+    path('signup/', views.CustomAuthentication.signupView, name='signup'),
 
     path("child/update", views.ChildView.update),
    

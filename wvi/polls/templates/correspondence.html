@@ -9,83 +9,110 @@
  
     <title>Document</title>
 </head>
+<!-- {% extends "template.html" %} -->
+    <!-- {% block content %} -->
 <body>
-    <form action="/correspondence/insert_excel" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <label for="file">File</label>
-        <input type="file" name="file_excel" id="file_excel" >
-        <button type="submit">Submit</button>
-    </form>
-
-    <form action="/correspondence/update_due_date" method="post">
-        {% csrf_token %}
-        <label for="due_date">Update Due Date Field</label>
-        <input type="number" name="due_date" id="due_date" value="{{param}}">
-        <button type="submit">Submit</button>
-    </form>
+    <div class="container">
+        <form action="/correspondence/insert_excel" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <label for="file">File</label>
+            <input type="file" name="file_excel" class="form-control" id="file_excel" >
+            <br>
+            <button class="btn btn-primary " type="submit">Submit</button>
+        </form>
+    <hr>
+    <br>
+        <form action="/correspondence/update_due_date" method="post">
+            {% csrf_token %}
+            <label for="due_date">Update Due Date Field</label>
+            <input type="number" class="form-control" name="due_date" id="due_date" value="{{param}}">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        <hr>
+        <br>
+        <br>
+        {% if error %}
+            <p>{{error}}</p>
+        {% endif %}
+        
+        {% if correspondences %}
+        <table class="table table-striped table-bordered" id="tables">
+            <thead>
+            <tr>
+                <th>Child ID</th>
+                <th>Child Name</th>
+                <th>Community</th>
+                <th>Correspondence Type</th>
+                <th>Creation Date</th>
+                <th>Mail Action and Route</th>
+                <th>Due Date Field</th>
+                <th>Due Date System</th>
+                <th>Days Before Due Date Field</th>
+                <th>Days Before Due Date System</th>
+                <th>Status</th>
+                <th>Kader</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for correspondence in correspondences %}
+               <tr 
+               
+               >
+                <td>{{correspondence.child_id.id}}</td>
+                <td>{{correspondence.child_id.name}}</td>
+                <td>{{correspondence.child_id.community}}</td>
+                <td>{{correspondence.type}}</td>
+                <td>{{correspondence.creation_date}}</td>
+                <td>{{correspondence.mail_action}}</td>
+                <td>{{correspondence.due_date_field}}</td>
+                <td>{{correspondence.due_date_system}}</td>
+                <td>{{correspondence.days_before_due_date_field}}</td>
+                <td>{{correspondence.days_before_due_date_system}}</td>
+                <td {% if  correspondence.days_before_due_date_system < 7 %}
+                style="background-color:red"
+            {% elif  correspondence.days_before_due_date_system < 14 %}
+                style="background-color:yellow"
+            {% endif %}>{{correspondence.status}}</td>
+                <td>
+                    <form action="/correspondence/update_kader" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="correspondence_id" value="{{correspondence.id}}">
+                        <select name="kader_id" id="kader" >
+                            {% for kader in kaders %}
+                                <option value="{{kader.id}}" {% if kader.id == correspondence.kader_id.id %} selected {% endif %}>{{kader.name}} - {{kader.phone_number}}</option>
+                            {% endfor %}
+                            <option value="NULL" {% if  correspondence.kader_id is None %} selected {% endif %}></option>
+                        </select>
+                        <p></p>
+                        <button type="submit" class="btn btn-secondary">Update</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <th>Child ID</th>
+                <th>Child Name</th>
+                <th>Community</th>
+                <th>Correspondence Type</th>
+                <th>Creation Date</th>
+                <th>Mail Action and Route</th>
+                <th>Due Date Field</th>
+                <th>Due Date System</th>
+                <th>Days Before Due Date Field</th>
+                <th>Days Before Due Date System</th>
+                <th>Status</th>
+                <th>Kader</th>
+            </tr>
+        </tfoot>
+        </table>
+        {% else %}
+            <p>Data not exist !</p>
+        {% endif %}
+    </div>
     
-    {% if error %}
-        <p>{{error}}</p>
-    {% endif %}
     
-    {% if correspondences %}
-    <table class="table table-striped table-bordered" id="tables">
-        <thead>
-        <tr>
-            <th>Child ID</th>
-            <th>Child Name</th>
-            <th>Community</th>
-            <th>Correspondence Type</th>
-            <th>Creation Date</th>
-            <th>Mail Action and Route</th>
-            <th>Due Date Field</th>
-            <th>Due Date System</th>
-            <th>Days Before Due Date Field</th>
-            <th>Days Before Due Date System</th>
-            <th>Status</th>
-            <th>Kader</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for correspondence in correspondences %}
-           <tr 
-           
-           >
-            <td>{{correspondence.child_id.id}}</td>
-            <td>{{correspondence.child_id.name}}</td>
-            <td>{{correspondence.child_id.community}}</td>
-            <td>{{correspondence.type}}</td>
-            <td>{{correspondence.creation_date}}</td>
-            <td>{{correspondence.mail_action}}</td>
-            <td>{{correspondence.due_date_field}}</td>
-            <td>{{correspondence.due_date_system}}</td>
-            <td>{{correspondence.days_before_due_date_field}}</td>
-            <td>{{correspondence.days_before_due_date_system}}</td>
-            <td {% if  correspondence.days_before_due_date_system < 7 %}
-            style="background-color:red"
-        {% elif  correspondence.days_before_due_date_system < 14 %}
-            style="background-color:yellow"
-        {% endif %}>{{correspondence.status}}</td>
-            <td>
-                <form action="/correspondence/update_kader" method="post">
-                    {% csrf_token %}
-                    <input type="hidden" name="correspondence_id" value="{{correspondence.id}}">
-                    <select name="kader_id" id="kader" >
-                        {% for kader in kaders %}
-                            <option value="{{kader.id}}" {% if kader.id == correspondence.kader_id.id %} selected {% endif %}>{{kader.name}} - {{kader.phone_number}}</option>
-                        {% endfor %}
-                        <option value="NULL" {% if  correspondence.kader_id is None %} selected {% endif %}></option>
-                    </select>
-                    <button type="submit">Update</button>
-                </form>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-    </table>
-    {% else %}
-        <p>Data not exist !</p>
-    {% endif %}
 
     {% block js %}
 
@@ -94,12 +121,37 @@
     <script src="//cdn.datatables.net/1.13.4/js/dataTables.bootstrap4.min.js"></script>
     <script>
         $(document).ready(function() {
-            $('#tables').DataTable();
-        });
+                new DataTable('#tables', {
+                    initComplete: function () {
+        this.api()
+            .columns()
+            .every(function () {
+                let column = this;
+                console.log(column.header() );
+                let title = column.footer().textContent;
+                
+                // Create input element
+                let input = document.createElement('input');
+                input.placeholder = title;
+                column.footer().replaceChildren(input);
+ 
+                // Event listener for user input
+                input.addEventListener('keyup', () => {
+                    if (column.search() !== this.value) {
+                        column.search(input.value).draw();
+                    }
+                });
+            });
+            }
+                });
+    
+            });
     </script>
-
     {% endblock js %}
+    
 
 </body>
+
+    <!-- {% endblock content%} -->
 </html>
 

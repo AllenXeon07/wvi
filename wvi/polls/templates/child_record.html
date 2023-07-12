@@ -10,91 +10,152 @@
     <title>Document</title>
 </head>
 <body>
+    {% extends "template.html" %}
 
-    <p>Total Available : {{count_avail}}</p>
-    <p>Total Sponsored : {{count_sponsored}}</p>
-    <p>Total Hold : {{count_hold}}</p>
-    <p>Total Left Program : {{count_left}}</p>
+    {% block content %}
 
-    <form action="/childrecord/insert_excel" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <label for="file">File</label>
-        <input type="file" name="file_excel" id="file_excel">
-        <button type="submit">Submit</button>
-    </form>
-
-    <form action="/childrecord/update_target" method="post">
-        {% csrf_token %}
-        <label for="target">Update Target</label>
-        <input type="number" name="target" id="target" value="{{param}}">
-        <button type="submit">Submit</button>
-    </form>
-    
-    {% if error %}
-        <p>{{error}}</p>
-    {% endif %}
-    
-    {% if child_records %}
-    <table class="table table-striped table-bordered" id="tables">
-        <thead>
-        <tr>
-            <th>Child ID</th>
-            <th>Child Name</th>
-            <th>Gender</th>
-            <th>Project Number and Name</th>
-            <th>Community</th>
-            <th>RC Status</th>
-            <th>Age</th>
-            <th>Kader</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for child in child_records %}
-           <tr>
-            <td>{{child.child_id.id}}</td>
-            <td>{{child.child_id.name}}</td>
-            <td>{{child.child_id.gender}}</td>
-            <td>{{child.project_number}}</td>
-            <td>{{child.child_id.community}}</td>
-            {% if child.status == "3 - Hold" %}
-                <td style="background-color:yellow">{{child.status}}</td>
-            {% else %}
-                <td>{{child.status}}</td>
+ <div class="container">
+    <div class="row">
+        <div class="col">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">Total Available : {{count_avail}}</li>
+                <li class="list-group-item">Total Sponsored : {{count_sponsored}}</li>
+                <li class="list-group-item">Total Hold : {{count_hold}}</li>
+                <li class="list-group-item">Total Left Program : {{count_left}}</li>
+            </ul>
+        </div>
+      
+        <div class="col">
+            <hr>
+            <form action="/childrecord/insert_excel" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <label for="file" class="form-label">File</label>
+                <input class="form-control" type="file" name="file_excel" id="file_excel">
+                <br>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+            
+        <hr>
+            <form action="/childrecord/update_target" method="post">
+                {% csrf_token %}
+                <label for="target">Update Target</label>
+                <input type="number" class="form-control" name="target" id="target" value="{{param}}">
+                <br>
+                <button type="submit"  class="btn btn-primary">Submit</button>
+            </form>
+            <hr>
+            <br>
+            <br>
+            {% if error %}
+                <p>{{error}}</p>
             {% endif %}
-            <td>{{child.child_id.age}}</td>
-            <td>
-                <form action="/childrecord/update" method="post">
-                    {% csrf_token %}
-                    <input type="hidden" name="childrecord_id" value="{{child.id}}">
-                    <select name="kader_id" id="kader" >
-                        {% for kader in kaders %}
-                            <option value="{{kader.id}}" {% if kader.id == child.kader_id.id %} selected {% endif %}>{{kader.name}} - {{kader.phone_number}}</option>
-                        {% endfor %}
-                        <option value="NULL" {% if child.kader_id is None %} selected {% endif %}></option>
-                    </select>
-                    <button type="submit">Update</button>
-                </form>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-    </table>
-    {% else %}
-        <p>Data not exist !</p>
-    {% endif %}
+            
+            {% if child_records %}
+            <table class="table table-striped table-bordered" id="tables">
+                <thead>
+                <tr>
+                    <th>Child ID</th>
+                    <th>Child Name</th>
+                    <th>Gender</th>
+                    <th>Project Number and Name</th>
+                    <th>Community</th>
+                    <th>RC Status</th>
+                    <th>Age</th>
+                    <th>Kader</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for child in child_records %}
+                   <tr>
+                    <td>{{child.child_id.id}}</td>
+                    <td>{{child.child_id.name}}</td>
+                    <td>{{child.child_id.gender}}</td>
+                    <td>{{child.project_number}}</td>
+                    <td>{{child.child_id.community}}</td>
+                    {% if child.status == "3 - Hold" %}
+                        <td style="background-color:yellow">{{child.status}}</td>
+                    {% else %}
+                        <td>{{child.status}}</td>
+                    {% endif %}
+                    <td>{{child.child_id.age}}</td>
+                    <td>
+                        <form action="/childrecord/update" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="childrecord_id" value="{{child.id}}">
+                            <select name="kader_id" id="kader" >
+                                {% for kader in kaders %}
+                                    <option value="{{kader.id}}" {% if kader.id == child.kader_id.id %} selected {% endif %}>{{kader.name}} - {{kader.phone_number}}</option>
+                                {% endfor %}
+                                <option  value="NULL" {% if child.kader_id is None %} selected {% endif %}></option>
+                            </select>
+                            <p></p>
+                            <button type="submit" class="btn btn-secondary">Update</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th>Child ID</th>
+                    <th>Child Name</th>
+                    <th>Gender</th>
+                    <th>Project Number and Name</th>
+                    <th>Community</th>
+                    <th>RC Status</th>
+                    <th>Age</th>
+                    <th>Kader</th>
+                </tr>
+            </tfoot>
+            </table>
+            {% else %}
+                <p>Data not exist !</p>
+            {% endif %}
+        
+            
+        </div>
+    </div>
+        
+ </div>
 
-    {% block js %}
+{% block js %}
+    
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
+        <script src="//cdn.datatables.net/1.13.4/js/dataTables.bootstrap4.min.js"></script>
+        <script>
+            $(document).ready(function() {
+                new DataTable('#tables', {
+                    scrollX: true,
+                    initComplete: function () {
+        this.api()
+            .columns()
+            .every(function () {
+                let column = this;
+                console.log(column.header() );
+                let title = column.footer().textContent;
+                
+                // Create input element
+                let input = document.createElement('input');
+                input.placeholder = title;
+                column.footer().replaceChildren(input);
+ 
+                // Event listener for user input
+                input.addEventListener('keyup', () => {
+                    if (column.search() !== this.value) {
+                        column.search(input.value).draw();
+                    }
+                });
+            });
+            }
+                });
+    
+            });
+        </script>
+    
+        {% endblock js %}
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
-    <script src="//cdn.datatables.net/1.13.4/js/dataTables.bootstrap4.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            $('#tables').DataTable();
-        });
-    </script>
-
-    {% endblock js %}
+    {% endblock %}
 
 </body>
 </html>

@@ -1,28 +1,76 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from .models import *
 from django.core.files.storage import FileSystemStorage
 from django.views import generic
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 import pandas as pd
 import datetime
 import os
 
 # Create your views here.
 
+class CustomAuthentication():
+    def loginView(request):
+        if request.user.is_authenticated:
+            return redirect('index')
+        if request.method == "POST":
+            username_login = request.POST['username']
+            password_login = request.POST['password']
+            user = authenticate(request, username = username_login, password = password_login)
+            if user is not None:
+                login(request, user)
+                return redirect('index')
+            else:
+                msg = 'Error login'
+                form = AuthenticationForm(request.POST)
+                return render(request, 'login.html', {'form': form, 'msg': msg})
+        else:
+            form = AuthenticationForm()
+            return render(request, 'login.html', {'form': form})
+        
+    def logoutView(request):
+        if request.method == "GET":
+            if request.user.is_authenticated:
+                logout(request)
+        return redirect('login')
+    
+    def signupView(request):
+        if request.user.is_authenticated:
+            return redirect('index')
+        if request.method == 'POST':
+            form = UserCreationForm(request.POST)
+            if form.is_valid():
+                form.save()
+                username = form.cleaned_data.get('username')
+                password = form.cleaned_data.get('password1')
+                user = authenticate(username=username, password=password)
+                login(request, user)
+                return redirect('index')
+            else:
+                return render(request, 'signup.html', {'form': form})    
+        else:
+            form = UserCreationForm()
+            return render(request, 'signup.html', {'form': form})
+
 class ChildRecordView():
     def view(request):
-        template_name = "child_record.html"
-        context = {
-            "child_records" : ChildRecord.objects.all(),
-            "kaders" : Kader.objects.all(),
-            "count_avail":  ChildRecord.objects.filter(status="1 - Available").count() ,
-            "count_sponsored": ChildRecord.objects.filter(status="2 - Sponsored").count(),
-            "count_hold": ChildRecord.objects.filter(status="3 - Hold").count(),
-            "count_left":ChildRecord.objects.filter(status="4 - Left Program").count(),
-            "param": Parameters.objects.get(pk=1).target_child
-        }
-        return render(request, template_name, context)
+        if request.user.is_authenticated:
+            template_name = "child_record.html"
+            context = {
+                "child_records" : ChildRecord.objects.all(),
+                "kaders" : Kader.objects.all(),
+                "count_avail":  ChildRecord.objects.filter(status="1 - Available").count() ,
+                "count_sponsored": ChildRecord.objects.filter(status="2 - Sponsored").count(),
+                "count_hold": ChildRecord.objects.filter(status="3 - Hold").count(),
+                "count_left":ChildRecord.objects.filter(status="4 - Left Program").count(),
+                "param": Parameters.objects.get(pk=1).target_child
+            }
+            return render(request, template_name, context)
+        else:
+            return redirect('login')
     
     def insert_excel(request):
         if request.method == "POST":
@@ -116,11 +164,14 @@ class ChildRecordView():
 
 class ChildView():
     def view(request):
-        template_name = "index.html"
-        context = {
-            "childs": Child.objects.all()
-        }
-        return render(request, template_name, context)
+        if request.user.is_authenticated:
+            template_name = "index.html"
+            context = {
+                "childs": Child.objects.all()
+            }
+            return render(request, template_name, context)
+        else:
+            return redirect('login')
     
     def update(request):
         if request.method == "POST":
@@ -135,11 +186,14 @@ class ChildView():
 
 class KaderView():
     def view(request):
-        template_name = "kader.html"
-        context = {
-            "kaders" : Kader.objects.all()
-        }
-        return render(request, template_name, context)
+        if request.user.is_authenticated:
+            template_name = "kader.html"
+            context = {
+                "kaders" : Kader.objects.all()
+            }
+            return render(request, template_name, context)
+        else:
+            return redirect('login')
     
     def insert(request):
         if request.method == "POST":
@@ -177,17 +231,20 @@ class KaderView():
 
 class CorrespondenceView():
     def view(request):
-        template_name = "correspondence.html"
-        for correspondence in Correspondence.objects.all():
-            correspondence.days_before_due_date_field = (correspondence.due_date_field - datetime.datetime.now().date() ).days
-            correspondence.days_before_due_date_system= (correspondence.due_date_system - datetime.datetime.now().date() ).days
-            correspondence.save()
-        context = {
-            "correspondences" : Correspondence.objects.all(),
-            "kaders" : Kader.objects.all(),
-            "param" : Parameters.objects.get(pk=1).deadline_due_date_field
-        }
-        return render(request, template_name, context)
+        if request.user.is_authenticated:
+            template_name = "correspondence.html"
+            for correspondence in Correspondence.objects.all():
+                correspondence.days_before_due_date_field = (correspondence.due_date_field - datetime.datetime.now().date() ).days
+                correspondence.days_before_due_date_system= (correspondence.due_date_system - datetime.datetime.now().date() ).days
+                correspondence.save()
+            context = {
+                "correspondences" : Correspondence.objects.all(),
+                "kaders" : Kader.objects.all(),
+                "param" : Parameters.objects.get(pk=1).deadline_due_date_field
+            }
+            return render(request, template_name, context)
+        else:
+            return redirect('login')
     
     def insert_excel(request):
         if request.method == "POST": 
@@ -287,11 +344,14 @@ class CorrespondenceView():
 
 class ParticipantView():
     def view(request):
-        template_name = "participant.html"
-        context = {
-            "participants" : Participation.objects.all()
-        }
-        return render(request, template_name, context)
+        if request.user.is_authenticated:
+            template_name = "participant.html"
+            context = {
+                "participants" : Participation.objects.all()
+            }
+            return render(request, template_name, context)
+        else:
+            return redirect('login')
     
     def insert_excel(request):
         if request.method == "POST":
@@ -359,11 +419,14 @@ class ParticipantView():
 
 
 def index(request):
-    childs = Child.objects.all()
-    context = {
-         "childs": childs
-    }
-    return render(request, "index.html", context)
+    if request.user.is_authenticated:
+        childs = Child.objects.all()
+        context = {
+            "childs": childs
+        }
+        return render(request, "index.html", context)
+    else:
+            return redirect('login')
 
 def insert(request):
     id = request.POST['id']
